@@ -1,41 +1,189 @@
-# Book-Review-Sentiment-Analysis
-Understanding Reader Emotions through Aspect-Based Sentiment Analysis with by team 3 people
+# 📚 BookInsight — Book Review Sentiment Analysis
 
-[![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
-[![TensorFlow](https://img.shields.io/badge/TensorFlow-2.x-orange.svg)](https://www.tensorflow.org/)
-[![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-Latest-green.svg)](https://scikit-learn.org/)
+> Understanding Reader Emotions through Aspect-Based Sentiment Analysis with by team 3 people
 
-โครงการวิเคราะห์ความรู้สึกจากรีวิวหนังสือแบบระบุแง่มุม (**Aspect-Based Sentiment Analysis**) โดยเปรียบเทียบประสิทธิภาพระหว่างโมเดล Machine Learning พื้นฐาน และ Deep Learning เพื่อการวิเคราะห์ที่แม่นยำในระดับองค์ประกอบของเนื้อหา
+---
 
-## 🌟 บทนำ (Introduction)
-โดยปกติการทำ Sentiment Analysis จะบอกภาพรวมว่ารีวิวเป็นบวกหรือลบ แต่โปรเจกต์นี้เลือกใช้ **ABSA** เพื่อเจาะลึกลงไปว่าผู้อ่านรู้สึกอย่างไรต่อแง่มุมเฉพาะ เช่น:
-- **Plot**: เนื้อเรื่องและการดำเนินเรื่อง
-- **Character**: ตัวละครและการพัฒนาตัวละคร
-- **Storytelling**: วิธีการเล่าเรื่องของผู้เขียน
-- **Price**: ความคุ้มค่าและราคา
+## 🔍 Overview
 
-## 📊 ข้อมูลที่ใช้ (Dataset)
-- **จำนวนข้อมูล**: 21,605 แถว (ทำความสะอาดแล้วเหลือ 20,684 แถว)
-- **รูปแบบ Input**: ใช้เทคนิคการรวม Aspect เข้ากับประโยคในรูปแบบ `aspect <sep> sentence`
-- **การแบ่งข้อมูล**: Train 80% / Test 20%
+การวิเคราะห์ sentiment แบบทั่วไปบอกได้แค่ว่ารีวิวเป็นบวกหรือลบ แต่ไม่บอกว่า *ส่วนไหน* ของหนังสือที่ถูกชมหรือถูกตำหนิ
 
-## 🤖 โมเดลที่ใช้เปรียบเทียบ (Models)
-1. **Baseline Model**: Logistic Regression ร่วมกับ TF-IDF Vectorizer
-2. **Deep Learning Model**: Long Short-Term Memory (LSTM)
+โปรเจกต์นี้จึงใช้ **Aspect-Based Sentiment Analysis (ABSA)** เพื่อวิเคราะห์ความรู้สึกของผู้อ่านแยกตามแต่ละด้าน เช่น `plot`, `character`, `storytelling`, `price` และเปรียบเทียบประสิทธิภาพระหว่าง:
 
-## 📈 สรุปผลการทดลอง
-จากการทดสอบพบว่าโมเดล **LSTM** มีความสามารถในการเข้าใจบริบท (Context) ได้ดีกว่า โดยเฉพาะในประโยคที่มีความย้อนแย้ง (เช่น "เนื้อเรื่องดีแต่ตัวละครน่าเบื่อ") ในขณะที่ Baseline Model มักจะเกิดความสับสนเมื่อเจอคำที่มีความหมายต่างกันในประโยคเดียว
+- **Baseline** — Logistic Regression (TF-IDF)
+- **Deep Learning** — Bidirectional LSTM
 
-## 📂 โครงสร้างไฟล์ (Project Structure)
-| ไฟล์ | รายละเอียด |
-|---|---|
-| `Aspect_Based_Sentiment_Analysis.ipynb` | สมุดโน้ตขั้นตอนการเตรียมข้อมูลและการเทรนโมเดล |
-| `preprocessed_review.csv` | ชุดข้อมูลที่ผ่านการ Pre-process เรียบร้อยแล้ว |
-| `my_lstm_absa_model.h5` | โมเดล LSTM ที่บันทึกไว้ |
-| `my_baseline_lr_model.joblib` | โมเดล Logistic Regression ที่บันทึกไว้ |
-| `Cs374_NLP_Book_Final.pdf` | เอกสารสรุปโครงการและผลการวิจัยฉบับเต็ม |
+---
 
-## 🚀 การเริ่มต้นใช้งาน
-1. **ติดตั้ง Dependencies**:
-   ```bash
-   pip install tensorflow scikit-learn pandas numpy joblib
+## 📁 Repository Structure
+
+```
+Book-Review-Sentiment-Analysis/
+├── Book Review Sentiment Analysis/
+│   ├── Aspect_Based_Sentiment_Analysis.ipynb   # Main notebook
+│   ├── preprocessed_review.csv                  # Cleaned dataset
+│   ├── my_lstm_absa_model.h5                    # Trained BI-LSTM model
+│   └── my_baseline_lr_model.joblib              # Trained Logistic Regression model
+├── cs374_NLP_BookSentiment Analysis.pdf         # Project presentation
+└── README.md
+```
+
+---
+
+## 📊 Dataset & Preprocessing
+
+| Step | Detail |
+|------|--------|
+| Raw data | 21,605 rows |
+| After cleaning | 20,684 rows |
+| Train split (80%) | 16,547 samples |
+| Test split (20%) | 4,137 samples |
+
+**ขั้นตอน Preprocessing:**
+1. กรองรีวิวที่สั้นเกินไป, มีค่าว่าง, หรือ sentiment ที่ไม่ถูกต้อง (`-1`, `0`, `1`)
+2. สร้าง Input ในรูปแบบ `aspect <sep> sentence` เพื่อให้โมเดลรู้ว่ากำลังสนใจ Aspect ใด
+3. แปลงข้อความด้วย `Tokenizer` + `pad_sequences` (maxlen=100)
+
+**ตัวอย่างข้อมูล:**
+
+| sentence | aspect | sentiment |
+|----------|--------|-----------|
+| I loved the story | plot | 1 |
+| I found it extremely hard to keep reading it | storytelling | -1 |
+| It lacked passion | plot | -1 |
+
+---
+
+## 🤖 Models
+
+### Model 1: Bidirectional LSTM
+
+**Architecture:** `Embedding → Bidirectional LSTM → Dense`
+
+ใช้ **Class Weights** แก้ปัญหา Imbalanced Data:
+- Neutral: `1.33x`
+- Negative: `1.20x`
+
+**Results:**
+
+| Class | Precision | Recall | F1-Score |
+|-------|-----------|--------|----------|
+| Negative | 0.62 | 0.65 | 0.63 |
+| Neutral | 0.52 | 0.48 | 0.50 |
+| Positive | 0.77 | 0.77 | 0.77 |
+| **Accuracy** | | | **0.67** |
+
+---
+
+### Model 2: Baseline — Logistic Regression
+
+**Architecture:** `TF-IDF (ngram_range=(1,2)) → Logistic Regression`
+
+**Results:**
+
+| Class | Precision | Recall | F1-Score |
+|-------|-----------|--------|----------|
+| Negative | 0.67 | 0.62 | 0.65 |
+| Neutral | 0.58 | 0.40 | 0.47 |
+| Positive | 0.72 | 0.87 | 0.79 |
+| **Accuracy** | | | **0.68** |
+
+---
+
+## 📈 Model Comparison
+
+| Model | Overall Accuracy | Strength |
+|-------|-----------------|----------|
+| Baseline (Logistic Regression) | **68%** | Overall accuracy สูงกว่าเล็กน้อย |
+| Bidirectional LSTM | 67% | ความเข้าใจเชิง semantic ดีกว่า |
+
+---
+
+## 🧪 Challenge Set: 4 สถานการณ์
+
+### Case 1: Consistent Positive (+/+)
+> *"The plot was amazing and the characters so perfect."*
+
+| Model | Plot | Character |
+|-------|------|-----------|
+| LSTM | ✅ Positive (100.0%) | ✅ Positive (100.0%) |
+| Baseline | ✅ Positive (75.0%) | ✅ Positive (75.2%) |
+
+---
+
+### Case 2: Consistent Negative (-/-)
+> *"The movie was slow and the acting was terrible."*
+
+| Model | Plot | Character |
+|-------|------|-----------|
+| LSTM | ✅ Negative (58.4%) | ✅ Negative (68.0%) |
+| Baseline | ✅ Negative (40.0%) | ✅ Negative (44.8%) |
+
+---
+
+### Case 3: Consistent Neutral (0/0)
+> *"Okay for a quick read and the characters so simple."*
+
+| Model | Plot | Character |
+|-------|------|-----------|
+| LSTM | ✅ Neutral (76.6%) | ✅ Neutral (86.2%) |
+| Baseline | ✅ Neutral (54.2%) | ✅ Neutral (55.6%) |
+
+---
+
+### Case 4: Conflict Case (+/-) ⚠️
+> *"The plot was amazing, but the characters were boring."*
+
+| Model | Plot (should be Pos) | Character (should be Neg) | Score |
+|-------|----------------------|---------------------------|-------|
+| LSTM | ✅ Positive (45.2%) | ❌ Positive (47.0%) | 50% |
+| Baseline | ❌ Neutral (49.6%) | ❌ Neutral (45.4%) | **0%** |
+
+**Analysis:** Baseline "สับสน" เพราะเห็นทั้งคำบวกและลบ จึงเฉลี่ยออกมาเป็น Neutral ทั้งหมด ส่วน LSTM ทำได้ดีกว่าโดยจับ Positive ของ plot ได้ถูก แต่ยังถูก Distract จากคำว่า "amazing" ที่อยู่ต้นประโยค
+
+---
+
+## 💡 Conclusion
+
+| ด้าน | ผล |
+|------|----|
+| Overall Accuracy | Baseline ดีกว่าเล็กน้อย (68% vs 67%) |
+| Semantic Understanding | **LSTM ดีกว่า** — เหมาะกับ ABSA มากกว่า |
+| Conflict Case | LSTM ถูก 50%, Baseline ถูก 0% |
+| Neutral Bias | Baseline มี bias ทาย Neutral เมื่อสับสน |
+| Positive Bias | LSTM ถูก Distract จากคำ Positive ต้นประโยค |
+
+**คำที่มีผลมากที่สุด:** `amazing`, `boring`, `but`
+
+> LSTM มีความเข้าใจเชิงความหมายดีกว่า ซึ่งเหมาะกับงาน ABSA มากกว่า แม้ Overall Accuracy จะต่ำกว่า Baseline เพียง 1%
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+```bash
+pip install tensorflow keras scikit-learn pandas numpy lime
+```
+
+### Run the Notebook
+
+```bash
+jupyter notebook "Aspect_Based_Sentiment_Analysis.ipynb"
+```
+
+### Load Pre-trained Models
+
+```python
+import tensorflow as tf
+import joblib
+
+# Load LSTM model
+lstm_model = tf.keras.models.load_model('my_lstm_absa_model.h5')
+
+# Load Baseline model
+lr_model = joblib.load('my_baseline_lr_model.joblib')
+```
+
+---
